@@ -2,7 +2,7 @@
 // priority_queue in STL
 #include<bits/stdc++.h>
 #include<iostream>
-#include<stdio.h>
+#include<cstdio.h>
 
 using namespace std;
 
