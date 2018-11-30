@@ -2,7 +2,6 @@
 // priority_queue in STL
 #include<bits/stdc++.h>
 #include<iostream>
-#include<cstdio.h>
 
 using namespace std;
 
@@ -107,19 +106,18 @@ int main()
   int node_count=0;
   int src, dest, dist = 0;
 
-  Graph network(node_count);
 
   //INPUT
   cout<<"Enter number of nodes for the network: ";
   cin>>node_count;
+  Graph network(node_count);
   //MENU
   for(int index=0;index<node_count;index++)
   {
-    cout<<"Enter Edge Information (Source, Destination, Distance): ";
-    scanf("%d,%d,%d", &src, &dest, &dist);
-    cout<<"POOP";
+    cout<<"Enter Edge Information (Source Destination Distance): ";
+    cin>>src>>dest>>dist;
+    cout<<src<<' '<<dest<<' '<<dist<<endl;
     network.addEdge(src, dest, dist);
-    cout<<"ASS";
   }
 
   network.shortestPath(0);
