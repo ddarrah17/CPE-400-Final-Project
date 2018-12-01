@@ -68,6 +68,7 @@ int main()
   //VARIABLES
   int node_count=0;
   int src, dest, dist = 0;
+  vector<int> power;
 
   //INPUT
   cout<<"Enter number of nodes for the network: ";
@@ -76,10 +77,10 @@ int main()
   //MENU
   for(int index=0;index<node_count;index++)
   {
-    cout<<"Enter Edge Information (Source Destination Distance): ";
+    cout<<"Enter Connection Details (Source Destination Distance): ";
     cin>>src>>dest>>dist;
-    cout<<src<<' '<<dest<<' '<<dist<<endl;
     network.addEdge(src, dest, dist);
+    power.push_back(100);
   }
 
   network.shortestPath(0);
