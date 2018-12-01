@@ -15,7 +15,7 @@ class Graph
   public:
     Graph(int V);
     void addEdge(int u, int v, int w);
-    void shortestPath(int s);
+    void shortestPath(int s, vector<int>& power);
 };
 
 Graph::Graph(int V)
@@ -30,7 +30,7 @@ void Graph::addEdge(int u, int v, int w)
   adj[v].push_back(make_pair(u, w));
 }
 
-void Graph::shortestPath(int src)
+void Graph::shortestPath(int src, vector<int>& power)
 {
   priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
 
@@ -83,7 +83,7 @@ int main()
     power.push_back(100);
   }
 
-  network.shortestPath(0);
+  network.shortestPath(0, power);
 
   return 0;
 }
