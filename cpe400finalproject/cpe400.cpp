@@ -75,6 +75,7 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
   pq.push(make_pair(0, src));
   dist[src] = 0;
 
+  int weight;
   while (!pq.empty())
   {
     //cout<<src<<", ";
@@ -86,7 +87,7 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
     {
 
       int v = (*i).first;
-      int weight = (*i).second;
+      weight = (*i).second;
       if(power[v]>0)
       {
         if (dist[v] > dist[u] + weight)
@@ -98,7 +99,7 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
       }
       if(power[v]<=0 && remaining == false)
       {
-        cout<<"no power remaining at requested node: ";
+        cout<<"ERROR: No power remaining at Node: " << v << endl;
       }
     }
     //cout<<endl;
@@ -126,8 +127,8 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
   {
       printf("\nSource Node (%d)   Distance from node (%d)\n\n",src,dest);
       printf("%d \t\t      %d\n", src, dist[dest]);
-      power[src]=power[src]-10;
-      power[dest]=power[dest]-10;
+      power[src]=power[src]-(10*weight);
+      power[dest]=power[dest]-(10*weight);
   }
 }
 
@@ -177,7 +178,7 @@ int main()
         network.test(src,dest,power,remaining);
         for(int i = 0 ; i < power.size() ; i++)
           {
-            if(power[i]==0)
+            if(power[i]<=0)
             {
               remaining = false;
             }
@@ -188,7 +189,7 @@ int main()
 
         for(int i = 0 ; i < power.size() ; i++)
         {
-          cout<<"Power remaining at node "<<i<< " :"<<power[i]<<endl;
+          cout << "Power remaining at Node " << i << ": " << power[i] << endl;
         }
         break;
 
