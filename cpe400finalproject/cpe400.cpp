@@ -20,6 +20,11 @@ class Graph
     void test(int s,int dest, vector<int>& power, bool reamining);
 };
 
+struct integers
+{
+  int x,y,z; 
+};
+
 Graph::Graph(int V)
 {
   this->V = V;
@@ -60,6 +65,8 @@ void Graph::shortestPath(int src, vector<int>& power)
     }
   }
 
+
+
   printf("Vertex   Distance from Source\n");
   for (int i = 0; i < V; ++i)
       printf("%d \t\t %d\n", i, dist[i]);
@@ -67,42 +74,41 @@ void Graph::shortestPath(int src, vector<int>& power)
 
 void Graph::test(int src,int dest, vector<int>& power,bool remaining)
 {
+  int edges = 0;
   priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
-  
-  int pathCount = 0;
-  vector <vector<int> > paths;
-  vector <vector<int> > weights;
 
   vector<int> dist(V, INF);
+  vector<integers> paths;
 
   pq.push(make_pair(0, src));
   dist[src] = 0;
 
   while (!pq.empty())
   {
+    //cout<<src<<", ";
     int u = pq.top().second;
     pq.pop();
 
     list< pair<int, int> >::iterator i;
     for (i = adj[u].begin(); i != adj[u].end(); ++i)
     {
-
       int v = (*i).first;
+      //cout << "V:" << v << endl; 
       int weight = (*i).second;
       if(power[v]>0)
       {
+        //cout << endl << "v: "<< v << endl << "u: "<< u << endl; 
+        //cout << "Dist v: " << dist[v] << " " << "Dist u:" << dist[u] << endl;
         if (dist[v] > dist[u] + weight)
         {
           dist[v] = dist[u] + weight;
+          cout << dist[u] << " + " << weight << endl;  
           pq.push(make_pair(dist[v], v));
+          cout << u << ", " << v << ", " << dist[v] << endl; 
+          paths.push_back({u, v, dist[v]});
 
-          paths.push_back(vector<int>());
-          paths[pathCount].push_back(v);
-          //if(v==1)
-          
-          weights.push_back(vector<int>());
-          weights[pathCount].push_back(dist[v]);
-          //cout<<v<<", ";
+          //pair <int, int> top = pq.top();
+          //cout << endl << top.first << " " << top.second << endl; 
         }
       }
       if(power[v]<=0 && remaining == false)
@@ -110,30 +116,8 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
         cout<<"no power remaining at requested node: ";
       }
     }
-    pathCount++;
+    //cout<<endl;
   }
-
-
-  for(int i=0;i<paths.size()-1;i++)
-  {
-    cout<<"path "<<i+1<<" : "<<src<<" ";
-    for(int j=0; j<paths[i].size();j++)
-    {
-      cout<<paths[i][j]<<" ";
-    }
-    cout<<endl;
-  }
-
-  /*for(int i=0;i<weights.size()-1;i++)
-  {
-    cout<<"weight "<<i+1<<" : "<<src<<" ";
-    for(int j=0; j<weights[i].size();j++)
-    {
-      cout<<weights[i][j]<<" ";
-    }
-    cout<<endl;
-  }*/
-
 
   if(remaining==false)
   {
@@ -176,7 +160,7 @@ int main()
     power.push_back(100);
   }
 
-  //network.shortestPath(0, power);
+  network.shortestPath(0, power);
 
 
   int selection = 0;
@@ -196,7 +180,7 @@ int main()
         cin>>src>>dest;
         if(remaining==true)
         {
-          //cout<<"Route taken: ";
+          cout<<"Route taken: ";
         }
         network.test(src,dest,power,remaining);
         for(int i = 0 ; i < power.size() ; i++)
