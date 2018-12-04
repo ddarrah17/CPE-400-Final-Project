@@ -108,10 +108,12 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
         if (dist[v] > dist[u] + weight)
         {
           dist[v] = dist[u] + weight;
-          //cout << endl << dist[u] << " + " << weight << endl;  
+          cout << endl << dist[u] << " + " << weight << endl;  
           weights.push_back({dist[u], weight, 0});
           pq.push(make_pair(dist[v], v));
           paths.push_back({u, v, dist[v]});
+          cout<<u<<","<<v<<","<<dist[v]<<endl;
+          //1power[v] -= 5;
           //pair <int, int> top = pq.top();
           //cout << endl << top.first << " " << top.second << endl; 
         }
@@ -150,7 +152,7 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
    if(tempWeight[0] == weights[i + j].x){
     tempWeight.push_back(weights[i+j].x + weights[i+j].y); 
    }
-    // cout << "weights: " << weights[i].x << " " << weights[i].y << " " << weights[i].z << endl; 
+     //cout << "weights: " << weights[i].x << " " << weights[i].y << " " << weights[i].z << endl; 
     // cout << "paths: " << paths[i].x << " " << paths[i].y << " " << paths[i].z << endl; 
   }
 
@@ -193,6 +195,7 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
       printf("%d \t\t      %d\n", src, dist[dest]);
       for(int i = 0; i < traversed.size(); i++){
         power[i] -= 10; 
+        //cout<<traversed.size()<<endl;
       }
   }
 }
@@ -204,21 +207,98 @@ int main()
   int src, dest, dist = 0;
   bool remaining = true;
   vector<int> power;
+  int choice = 0;
 
   //INPUT
-  cout<<"Enter number of nodes for the network: ";
-  cin>>node_count;
+
+
+    cout << "\nPlease select an option" << endl;
+    cout << "1. Simulation 1" << endl;
+    cout << "2. Simulation 2"<< endl;
+    cout << "3. Create Your Own Network"<<endl;
+
+    cin>>choice;
+
+    if(choice == 1)
+    {
+      node_count = 3;
+      cout<<"creating 3 nodes"<<endl;
+      cout<<"Src Dest Weight"<<endl;
+      cout<<" 0     1     2"<<endl;
+      cout<<" 0     2     6"<<endl;
+      cout<<" 1     2     3"<<endl;
+    }
+    else if(choice == 2)
+    {
+      node_count = 7;
+      cout<<"creating 7 nodes"<<endl;
+      cout<<"Src Dest Weight"<<endl;
+      cout<<" 0     5     1"<<endl;
+      cout<<" 0     1     3"<<endl;
+      cout<<" 0     3     2"<<endl;
+
+      cout<<" 1     6     6"<<endl;
+      cout<<" 2     1     2"<<endl;
+      cout<<" 3     2     1"<<endl;
+      cout<<" 4     3     3"<<endl;
+      cout<<" 5     4     4"<<endl;
+      cout<<" 6     5     2"<<endl;
+    }
+    else if(choice == 3)
+    {
+      cout<<"Enter number of nodes for the network: ";
+      cin>>node_count;
+    }
+    else
+    {
+      cout<<"invalid input ending program"<<endl;
+      return 0;
+    }
+
   Graph network(node_count);
-  //MENU
-  for(int index=0;index<node_count;index++)
+
+  if(choice == 1)
   {
-    cout<<"Enter Connection Details (Source Destination Distance): ";
-    cin>>src>>dest>>dist;
-    network.addEdge(src, dest, dist);
-    power.push_back(100);
+    network.addEdge(0,1,2);
+    network.addEdge(0,2,6);
+    network.addEdge(1,2,3);
+    for(int index=0;index<node_count;index++)
+    {
+      power.push_back(100);
+    }
   }
 
-  network.shortestPath(0, power);
+  if(choice == 2)
+  {
+    network.addEdge(0,5,1);
+    network.addEdge(0,1,3);
+    network.addEdge(0,3,2);
+
+    network.addEdge(1,6,6);
+    network.addEdge(2,1,2);
+    network.addEdge(3,2,1);
+    
+    
+    network.addEdge(5,4,4);
+    network.addEdge(4,3,3);
+    network.addEdge(6,5,2);
+    
+    for(int index=0;index<node_count;index++)
+    {
+      power.push_back(100);
+    }
+  }
+
+  if(choice == 3)
+  {
+    for(int index=0;index<node_count;index++)
+    {
+      cout<<"Enter Connection Details (Source Destination Distance): ";
+      cin>>src>>dest>>dist;
+      network.addEdge(src, dest, dist);
+      power.push_back(100);
+    }
+  }
 
 
   int selection = 0;
