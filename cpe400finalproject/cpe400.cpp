@@ -20,7 +20,7 @@ class Graph
     void test(int s,int dest, vector<int>& power, bool reamining);
 };
 
-struct integers
+struct Integers
 {
   int x,y,z; 
 };
@@ -78,7 +78,13 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
   priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
 
   vector<int> dist(V, INF);
-  vector<integers> paths;
+  vector<Integers> paths;
+  vector<Integers> weights; 
+  vector<int> temp; 
+  vector<int> tempWeight; 
+  vector<int> traversed;
+  vector<int> vertex; 
+
 
   pq.push(make_pair(0, src));
   dist[src] = 0;
@@ -102,11 +108,10 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
         if (dist[v] > dist[u] + weight)
         {
           dist[v] = dist[u] + weight;
-          cout << dist[u] << " + " << weight << endl;  
+          //cout << endl << dist[u] << " + " << weight << endl;  
+          weights.push_back({dist[u], weight, 0});
           pq.push(make_pair(dist[v], v));
-          cout << u << ", " << v << ", " << dist[v] << endl; 
           paths.push_back({u, v, dist[v]});
-
           //pair <int, int> top = pq.top();
           //cout << endl << top.first << " " << top.second << endl; 
         }
@@ -118,10 +123,62 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
     }
     //cout<<endl;
   }
+  
+  int j = 0; 
+  int k = 0; 
+
+ // Need to check for this first step of the vector looks like this: {0, X, 0} 
+ // Looking to see where the X went into the next portion like this: {X, Y, 0}
+    
+  while(weights[j].x == 0){
+    temp.push_back(weights[j].y);
+    j++; 
+  }
+
+  for(int i = 0; i < j; i++){
+    if(temp[k] != weights[j].x){
+      k++; 
+    } else {
+      //we know first path contained temp[k]
+      //cout << "First Path contained " << temp[k] << endl;
+      tempWeight.push_back(temp[k]);
+      break;
+    }
+  }
+
+  for(int i = 0; i < paths.size() - j; i++){
+   if(tempWeight[0] == weights[i + j].x){
+    tempWeight.push_back(weights[i+j].x + weights[i+j].y); 
+   }
+    // cout << "weights: " << weights[i].x << " " << weights[i].y << " " << weights[i].z << endl; 
+    // cout << "paths: " << paths[i].x << " " << paths[i].y << " " << paths[i].z << endl; 
+  }
+
+  int s = 0; 
+  for(int i = 0; i < paths.size(); i++){
+    if(tempWeight[s] == paths[i].z){
+       vertex.push_back(i); 
+       s++; 
+    }
+  }
+
+  for(int i = 0; i < vertex.size(); i++){
+    int t = vertex[i];
+    traversed.push_back(paths[t].x); 
+    traversed.push_back(paths[t].y);
+  }
+
+  sort(traversed.begin(), traversed.end());
+  traversed.erase( unique(traversed.begin(), traversed.end()));
+
+  for(int i = 0; i < traversed.size(); i++){
+    cout << traversed[i] << " " ;
+  }
+  cout << endl; 
 
   if(remaining==false)
-  {
-    for(int i =0; i<power.size(); i++)
+  { 
+    for(int i = 0; i<power.size(); i++)
     {
       if(power[i]==0)
       {
@@ -134,8 +191,9 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
   {
       printf("\nSource Node (%d)   Distance from node (%d)\n\n",src,dest);
       printf("%d \t\t      %d\n", src, dist[dest]);
-      power[src]=power[src]-10;
-      power[dest]=power[dest]-10;
+      for(int i = 0; i < traversed.size(); i++){
+        power[i] -= 10; 
+      }
   }
 }
 
