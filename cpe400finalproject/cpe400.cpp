@@ -67,18 +67,19 @@ void Graph::shortestPath(int src, vector<int>& power)
 
 void Graph::test(int src,int dest, vector<int>& power,bool remaining)
 {
-  int edges = 0;
   priority_queue< iPair, vector <iPair> , greater<iPair> > pq;
+  
+  int pathCount = 0;
+  vector <vector<int> > paths;
+  vector <vector<int> > weights;
 
   vector<int> dist(V, INF);
 
   pq.push(make_pair(0, src));
   dist[src] = 0;
 
-  int weight;
   while (!pq.empty())
   {
-    //cout<<src<<", ";
     int u = pq.top().second;
     pq.pop();
 
@@ -87,29 +88,51 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
     {
 
       int v = (*i).first;
-      weight = (*i).second;
+      int weight = (*i).second;
       if(power[v]>0)
       {
         if (dist[v] > dist[u] + weight)
         {
           dist[v] = dist[u] + weight;
           pq.push(make_pair(dist[v], v));
+
+          paths.push_back(vector<int>());
+          paths[pathCount].push_back(v);
+          //if(v==1)
+          
+          weights.push_back(vector<int>());
+          weights[pathCount].push_back(dist[v]);
           //cout<<v<<", ";
         }
       }
       if(power[v]<=0 && remaining == false)
       {
-        cout<<"ERROR: No power remaining at Node: " << v << endl;
+        cout<<"no power remaining at requested node: ";
       }
     }
-    //cout<<endl;
+    pathCount++;
   }
 
 
+  for(int i=0;i<paths.size()-1;i++)
+  {
+    cout<<"path "<<i+1<<" : "<<src<<" ";
+    for(int j=0; j<paths[i].size();j++)
+    {
+      cout<<paths[i][j]<<" ";
+    }
+    cout<<endl;
+  }
 
-
-
-
+  /*for(int i=0;i<weights.size()-1;i++)
+  {
+    cout<<"weight "<<i+1<<" : "<<src<<" ";
+    for(int j=0; j<weights[i].size();j++)
+    {
+      cout<<weights[i][j]<<" ";
+    }
+    cout<<endl;
+  }*/
 
 
   if(remaining==false)
@@ -127,8 +150,8 @@ void Graph::test(int src,int dest, vector<int>& power,bool remaining)
   {
       printf("\nSource Node (%d)   Distance from node (%d)\n\n",src,dest);
       printf("%d \t\t      %d\n", src, dist[dest]);
-      power[src]=power[src]-(10*weight);
-      power[dest]=power[dest]-(10*weight);
+      power[src]=power[src]-10;
+      power[dest]=power[dest]-10;
   }
 }
 
@@ -153,7 +176,7 @@ int main()
     power.push_back(100);
   }
 
-  network.shortestPath(0, power);
+  //network.shortestPath(0, power);
 
 
   int selection = 0;
@@ -173,12 +196,12 @@ int main()
         cin>>src>>dest;
         if(remaining==true)
         {
-          cout<<"Route taken: ";
+          //cout<<"Route taken: ";
         }
         network.test(src,dest,power,remaining);
         for(int i = 0 ; i < power.size() ; i++)
           {
-            if(power[i]<=0)
+            if(power[i]==0)
             {
               remaining = false;
             }
@@ -189,7 +212,7 @@ int main()
 
         for(int i = 0 ; i < power.size() ; i++)
         {
-          cout << "Power remaining at Node " << i << ": " << power[i] << endl;
+          cout<<"Power remaining at node "<<i<< " :"<<power[i]<<endl;
         }
         break;
 
