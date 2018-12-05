@@ -29,7 +29,7 @@ using namespace std;
       path p;
     };
 
-    result dijkstra(const graph &graph, int source, int target, vector <int> & power) {
+    result dijkstra(const graph &graph, int source, int target, vector <int> & power, vector <int> & powerIndex) {
       vector<int> min_distance( graph.size(), INT_MAX );
       min_distance[ source ] = 0;
       set< pair<int,int> > active_vertices;
@@ -41,21 +41,23 @@ using namespace std;
         if (where == target)
         {
           int cost = min_distance[where];
-          // std::cout << "cost is " << cost << std::endl;
+          std::cout << "cost is " << cost << std::endl;
           path p{where};
           while (where != source) {
             int next = where;
             for (edge e : graph[where])
             {
-              // std::cout << "examine edge from " << where << "->" << e.to << " length " << e.length << ":";
-              
+              std::cout << "examine edge from " << where << "->" << e.to << " length " << e.length << ":";
+              powerIndex.push_back(e.to);
+
+
               if (min_distance[e.to] == INT_MAX)
               {
                 // std::cout << e.to << " unexplored" << std::endl;
                 continue;
               }
               
-              if (e.length + min_distance[e.to] != min_distance[where])
+              if (e.length + min_distance[e.to] != min_distance[where] && power[powerIndex[0]] <= power[powerIndex[1]])
               {
                 continue;
               }
@@ -69,7 +71,7 @@ using namespace std;
               }*/
 
               next = e.to;
-              cout<<"next: " <<next<<endl;
+              //cout<<"next: " <<next<<endl;
               p.push_back(next);
               
               // std::cout << "backtracked to " << next << std::endl;
@@ -102,6 +104,7 @@ using namespace std;
       graph g;
       int choice,src,dest,weight,nodecount = 0;
       vector <int> power;
+      vector <int> powerIndex;
       vector <int> nodes;
       
     cout << "\nPlease select an option" << endl;
@@ -194,7 +197,7 @@ using namespace std;
       {
         cout<<endl<<"Send a packet (Source Dest): "<<endl;
         cin>>src>>dest;
-        auto distance = dijkstra(g,src,dest,power);
+        auto distance = dijkstra(g,src,dest,power,powerIndex);
         
         cout<<"Route Taken: ";
        
@@ -212,6 +215,7 @@ using namespace std;
         }
 
         nodes.clear();
+        powerIndex.clear();
         break;
       }
 
@@ -244,4 +248,3 @@ using namespace std;
       
       return 0;
 }
-    
