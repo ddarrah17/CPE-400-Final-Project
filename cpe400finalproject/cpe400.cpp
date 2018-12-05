@@ -41,13 +41,13 @@ using namespace std;
         if (where == target)
         {
           int cost = min_distance[where];
-          std::cout << "cost is " << cost << std::endl;
+          //std::cout << "cost is " << cost << std::endl;
           path p{where};
           while (where != source) {
             int next = where;
             for (edge e : graph[where])
             {
-              std::cout << "examine edge from " << where << "->" << e.to << " length " << e.length << ":";
+              //std::cout << "examine edge from " << where << "->" << e.to << " length " << e.length << ":";
               powerIndex.push_back(e.to);
 
 
@@ -199,7 +199,7 @@ using namespace std;
         cin>>src>>dest;
         auto distance = dijkstra(g,src,dest,power,powerIndex);
         
-        cout<<"Route Taken: ";
+        cout<<endl<<"Route Taken: ";
        
         //used to find all the nodes in the shortest path
         for (int i:distance.p) 
