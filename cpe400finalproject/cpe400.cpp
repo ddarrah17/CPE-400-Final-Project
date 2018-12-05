@@ -55,12 +55,12 @@ using namespace std;
                 continue;
               }
               
-
               if (e.length + min_distance[e.to] != min_distance[where])
               {
                 continue;
-                
               }
+              power[e.to] = power[e.to] - e.length;
+
               //cout<<"e.to after if: "<<e.to<<endl;
               //cout<<"temp after if: "<<e.to<<endl;
                /*if (e.length + min_distance[e.to] != min_distance[where] && power[e.length] < power[e.to])
@@ -208,7 +208,7 @@ using namespace std;
         //used to update the power vector
         for (int i=0; i<nodes.size();i++)
         {
-          power[nodes[i]]= power[nodes[i]] - 10;
+          //power[nodes[i]]= power[nodes[i]] - 10;
         }
 
         nodes.clear();
