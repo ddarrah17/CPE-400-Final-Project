@@ -28,11 +28,13 @@ using namespace std;
       int distance;
       path p;
     };
-    result dijkstra(const graph &graph, int source, int target) {
+
+    result dijkstra(const graph &graph, int source, int target, vector <int> & power) {
       vector<int> min_distance( graph.size(), INT_MAX );
       min_distance[ source ] = 0;
       set< pair<int,int> > active_vertices;
       active_vertices.insert( {0,source} );
+      int temp = 0;
       
       while (!active_vertices.empty()) {
         int where = active_vertices.begin()->second;
@@ -53,13 +55,23 @@ using namespace std;
                 continue;
               }
               
+
               if (e.length + min_distance[e.to] != min_distance[where])
               {
-                // std::cout << e.to << " not on path" << std::endl;
                 continue;
+                
               }
+              //cout<<"e.to after if: "<<e.to<<endl;
+              //cout<<"temp after if: "<<e.to<<endl;
+               /*if (e.length + min_distance[e.to] != min_distance[where] && power[e.length] < power[e.to])
+              {
+                // std::cout << e.to << " not on path" << std::endl;
+              }*/
+
               next = e.to;
+              cout<<"next: " <<next<<endl;
               p.push_back(next);
+              
               // std::cout << "backtracked to " << next << std::endl;
               break;
             }
@@ -75,7 +87,8 @@ using namespace std;
         }
         active_vertices.erase( active_vertices.begin() );
         for (auto ed : graph[where]) 
-          if (min_distance[ed.to] > min_distance[where] + ed.length) {
+          if (min_distance[ed.to] > min_distance[where] + ed.length) 
+          {
             active_vertices.erase( { min_distance[ed.to], ed.to } );
             min_distance[ed.to] = min_distance[where] + ed.length;
             active_vertices.insert( { min_distance[ed.to], ed.to } );
@@ -87,7 +100,7 @@ using namespace std;
     int main()
     {
       graph g;
-      int choice,src,dest = 0;
+      int choice,src,dest,weight,nodecount = 0;
       vector <int> power;
       vector <int> nodes;
       
@@ -147,6 +160,14 @@ using namespace std;
     else if(choice == 3)
     {
       cout<<"Enter number of nodes for the network: ";
+      cin>>nodecount;
+        for(int index=0; index<nodecount;index++)
+        {
+          cout<<"Enter node details (Source Dest Weight): ";
+          cin>>src>>dest>>weight;
+          add_edge(g,src,dest,weight);
+          power.push_back(100);
+        }
     }
     else
     {
@@ -173,7 +194,7 @@ using namespace std;
       {
         cout<<endl<<"Send a packet (Source Dest): "<<endl;
         cin>>src>>dest;
-        auto distance = dijkstra(g,src,dest);
+        auto distance = dijkstra(g,src,dest,power);
         
         cout<<"Route Taken: ";
        
@@ -187,8 +208,10 @@ using namespace std;
         //used to update the power vector
         for (int i=0; i<nodes.size();i++)
         {
-          power[nodes[i]]-=10;
+          power[nodes[i]]= power[nodes[i]] - 10;
         }
+
+        nodes.clear();
         break;
       }
 
