@@ -7,86 +7,162 @@
 
 using namespace std;
 
+    /**************************************************************************************
+    Creating a struct to act as the edges for each node created                           *
+    int to, holds an integer value to the node the edge it is connected to                *
+    int length, holds an integer value of the length to the node the edge is connected to *
+    **************************************************************************************/
     struct edge
     {
       int to;
       int length;
     };
     
+    
+
     using node = vector<edge>;
     using graph = vector<node>;
-    void add_edge( graph& g, int start, int finish, int length ) {
+
+    /*******************************************************************************************************
+    Function: add_edge                                                                                     *
+    Variables:                                                                                             *
+    graph & g is a graph passed by reference that will hold all the nodes, the graph will be the nextwork  *
+    int start is the index of the starting node AKA the source nodes                                       *
+    int finish is the index of the last node AKA the destination                                           *
+    int length is the length it takes to get from start to finish                                          *
+                                                                                                           *
+    Functionality: the purpose of this function is to add a node and eddge to the graph to build           *
+    the network.                                                                                           *
+    *******************************************************************************************************/
+    void add_edge( graph& g, int start, int finish, int length ) 
+    {
       if ((int)g.size() <= (max)(start, finish))
+      {
         g.resize( (max)(start,finish)+1 );
+      }
       g[start].push_back( {finish, length} );
       g[finish].push_back( {start, length} );
     }
     
     using path = vector<int>;
     
-    struct result {
+    /**************************************************************************************
+    Creating a struct to hold the result of the shortest path based on weig               *
+    int distance, holds an integer value of the shortest combined path                    *
+    path p,is a vector of ints that holds all the nodes that are used in the              *
+    shortest path                                                                         *
+    **************************************************************************************/
+    struct result 
+    {
       int distance;
       path p;
     };
 
+    /****************************************************************************************************
+    Function: dijkstra                                                                                  *
+    Variables:                                                                                          *
+    graph &graph, is a graph passed by reference that acts as the Network                               *
+    int source, the source node to where the user specifies                                             *
+    int target, the target/destination node to where the user specifies                                 *
+    vector <int> & power, a power vector passed by reference holding the power to each individual node  *
+    vector <int> & powerIndex, a vector of indexes to hold the possible "edge to" values, this vector   *
+    contains all possible next moves.                                                                   *
+                                                                                                        *
+    Functionality:                                                                                      *
+    If the power at all possible moves is the same it will take the shortest path based on the edge     *
+    weights. However, if the shortest path on the edge weights has a less power remaining then a move   *
+    that has a larger weight cost;the algorithm will take the path that has the highest power remaining *
+    but also removes the least amount of power from the system. The only nodes that lose power are the  *
+    source nodes and nodes in the path. The target node does not lose any power for receiving a packet  *
+    ****************************************************************************************************/
+
     result dijkstra(const graph &graph, int source, int target, vector <int> & power, vector <int> & powerIndex) {
+      
+      /**************************************************************************************************
+      variable declarations:                                                                            *
+      min_distance, vector of intance to contain the minimum distance fro source to target              *
+      active_vertices, a pair that connects the current shortest path together of the active vertices   *
+      or the possible paths                                                                             *
+      **************************************************************************************************/
+
       vector<int> min_distance( graph.size(), INT_MAX );
       min_distance[ source ] = 0;
       set< pair<int,int> > active_vertices;
       active_vertices.insert( {0,source} );
-      int temp = 0;
-      
-      while (!active_vertices.empty()) {
+
+
+      //while there are vertices actives and target has not been reached
+      while (!active_vertices.empty()) 
+      {
+        //set the vetices to the beginning, use -> second to get the "edge to value"
         int where = active_vertices.begin()->second;
+
+        //checking to see if where the current node is the target, if it is good to back track
         if (where == target)
         {
+
+          //get the cost and create a path from where target
           int cost = min_distance[where];
-          //std::cout << "cost is " << cost << std::endl;
           path p{where};
+
+          //check to see if we have hit the source, otherwise continue in the graph
           while (where != source) {
+            
+            //ensures that the next variable is set to where in case we are at or 1 away from source
             int next = where;
+
+            //in range for loop to look at all edges in the graph from current position
             for (edge e : graph[where])
             {
-              //std::cout << "examine edge from " << where << "->" << e.to << " length " << e.length << ":";
+              //push back all posible moves in to the power index
               powerIndex.push_back(e.to);
 
-
+              //if there is one move continue
               if (min_distance[e.to] == INT_MAX)
               {
-                // std::cout << e.to << " unexplored" << std::endl;
                 continue;
               }
               
+              //if there are multiple moves that do not equal min_distance and the power at shortest move is greater continue
               if (e.length + min_distance[e.to] != min_distance[where] && power[powerIndex[0]] <= power[powerIndex[1]])
               {
                 continue;
               }
+
+              //decerement the power based on weight
               power[e.to] = power[e.to] - e.length;
 
-              //cout<<"e.to after if: "<<e.to<<endl;
-              //cout<<"temp after if: "<<e.to<<endl;
-               /*if (e.length + min_distance[e.to] != min_distance[where] && power[e.length] < power[e.to])
-              {
-                // std::cout << e.to << " not on path" << std::endl;
-              }*/
+                //set power to 0 if negative as we cannot have negative power
+                if(power[e.to]<=0)
+                {
+                  power[e.to]=0;
+                }
 
+              //finalize next move and push it into the shortest path
               next = e.to;
-              //cout<<"next: " <<next<<endl;
               p.push_back(next);
               
-              // std::cout << "backtracked to " << next << std::endl;
+              
               break;
             }
+
+            //if where equals next break as the source will have been met
             if (where==next)
             {
-              // std::cout << "got lost at " << where << std::endl;
               break;
             }
+            //otherwise continue moving in the path;
             where = next;
           }
+
+          //reverse the path of p as the algorithm backtracked from the target
           reverse( p.begin(), p.end() );
+
+          //return the result with the cost and the move
           return {cost, move(p)};
         }
+
+        // used to finalize the cost and desired path for shortest edge if one move
         active_vertices.erase( active_vertices.begin() );
         for (auto ed : graph[where]) 
           if (min_distance[ed.to] > min_distance[where] + ed.length) 
@@ -96,17 +172,20 @@ using namespace std;
             active_vertices.insert( { min_distance[ed.to], ed.to } );
           }
       }
+      //returns INT_MAX if node doesn't exist 
       return {INT_MAX};
     }
     
     int main()
     {
+      //variable declarations
       graph g;
       int choice,src,dest,weight,nodecount = 0;
       vector <int> power;
       vector <int> powerIndex;
       vector <int> nodes;
       
+    //initial simulation menu
     cout << "\nPlease select an option" << endl;
     cout << "1. Simulation 1" << endl;
     cout << "2. Simulation 2"<< endl;
@@ -160,6 +239,7 @@ using namespace std;
           power.push_back(100);
         }
     }
+    //choice 3 is create your own network, details on how to do so in techinical report
     else if(choice == 3)
     {
       cout<<"Enter number of nodes for the network: ";
@@ -182,6 +262,7 @@ using namespace std;
 
 
  int selection = 0;
+  //menu select once a network has been created
   do
   {
     cout << "\nPlease select an option" << endl;
@@ -208,10 +289,20 @@ using namespace std;
           nodes.push_back(i);
         }
 
-        //used to update the power vector
-        for (int i=0; i<nodes.size();i++)
+        //checking if all nodes are still online
+        for (int i=0; i<power.size();i++)
         {
-          //power[nodes[i]]= power[nodes[i]] - 10;
+          if(power[i]<=0)
+          {
+            cout<<endl<<"No Power Remaining in node: "<<i<<" network is down, ending program"<<endl;
+            
+            for(int j=0;j<power.size();j++)
+            {
+              cout<<"Final Power remaining at node "<<j+1<<":"<<power[j]<<endl;
+            }
+
+            selection=3;
+          }
         }
 
         nodes.clear();
